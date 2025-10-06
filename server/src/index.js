@@ -25,4 +25,21 @@ io.on('connection', (socket) => {
 });
 
 const port = config.port || 8080;
+
+// Handle server errors (e.g., port already in use)
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n❌ Error: Port ${port} is already in use.`);
+    console.error('\nTo fix this issue, try one of the following:\n');
+    console.error('1. Kill the process using the port:');
+    console.error(`   lsof -ti :${port} | xargs kill -9`);
+    console.error('\n2. Or change the PORT in your .env file:');
+    console.error('   PORT=8081\n');
+    process.exit(1);
+  } else {
+    console.error('Server error:', err);
+    process.exit(1);
+  }
+});
+
 server.listen(port, () => console.log(`Server started on port :${port}`));
